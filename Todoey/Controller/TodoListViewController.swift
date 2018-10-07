@@ -10,13 +10,24 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     
-    var itemArray = ["Find Mike", "Buy eggos", "Destroy Demogorgon"]
+    var itemArray = [Item]()
     
+            let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+
+        
+        print(dataFilePath)
+        
+        loadItems()
+        
+
+        
+        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -27,7 +38,15 @@ class TodoListViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for:  indexPath)
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        cell.textLabel?.text = itemArray[indexPath.row].title
+        
+        if itemArray[indexPath.row].done == false {
+            cell.accessoryType = .none
+        }
+        else if itemArray[indexPath.row].done == true {
+            cell.accessoryType = .checkmark
+        }
+            
         
         return cell
         
@@ -39,12 +58,11 @@ class TodoListViewController: UITableViewController {
         
 //        print(itemArray[indexPath.row])
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-              tableView.cellForRow(at: indexPath)?.accessoryType = .none            
-        }
-        else {
-        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        
+       itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        
+        saveItems()
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
        
@@ -66,9 +84,13 @@ class TodoListViewController: UITableViewController {
             
            print(textField.text!)
             
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem.title = textField.text!
             
-            self.tableView.reloadData()
+            self.itemArray.append(newItem)
+            
+            self.saveItems()
+           
 
         }
         
@@ -84,11 +106,39 @@ class TodoListViewController: UITableViewController {
         
     }
     
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    func saveItems () {
+        let encoder = PropertyListEncoder()
         
+        do {
+            let data  = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+            
+        }
+        catch {
+            print("error encoding: \(error)")
+        }
+        
+        
+        self.tableView.reloadData()
+    }
+    
+    func loadItems() {
+        
+    
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            }
+            catch {
+                print("Error decoding item array")
+            }
+            
+        }
         
         
     }
+
 
 
 }
