@@ -32,7 +32,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Todoey" id="Xql-RS-r0T">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="HNG-h0-6bi"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="HNG-h0-6bi">
+                            <connections>
+                                <action selector="addButtonPressed:" destination="xis-hg-rPV" id="zD9-B1-cJm"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X1W-Rb-bhg" userLabel="First Responder" sceneMemberID="firstResponder"/>
